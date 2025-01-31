@@ -7,8 +7,8 @@ end
 if ~exist('mb1_beta','dir')
     mkdir('mb1_beta');
 end
-if ~exist('mb12_beta','dir')
-    mkdir('mb12_beta');
+if ~exist('mb6_beta','dir')
+    mkdir('mb6_beta');
 end
 if ~exist('b0','dir')
     mkdir('b0');
@@ -29,8 +29,8 @@ cd mb1_beta/
 system('tar xf *.tar')
 cd ../
 
-copyfile 3dmb12_beta.tar ./mb12_beta/
-cd mb12_beta/
+copyfile 3dmb6_beta.tar ./mb6_beta/
+cd mb6_beta/
 system('tar xf *.tar')
 cd ../
 

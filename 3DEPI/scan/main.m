@@ -17,10 +17,10 @@ RFspoil = true;
 % acquisition parameters
 voxelSize = [2.4 2.4 2.4]*1e-3;   % m
 %voxelSize= [2.4 1.2 1.2]*1e-3;
-nx = 90; ny = nx; nz = 84;
+nx = 90; ny = nx; nz = 42;
 
 alpha = 52;
-pf_ky = (nx-3*6)/nx;
+pf_ky = 1.0;%(nx-3*6)/nx;
 
 
 %TR = 0.8;                      % volume TR (sec)
@@ -53,7 +53,7 @@ sysGE = toppe.systemspecs();  % for plotting
 % We choose 4 shots since RF spoiling phase (for rf_inc = 117) repeats every 80 RF shots
 % (fat sat also spoils so only need 40 TRs not 80)
 % RF spoiling anyhow probably isn't doing much since TR=0.8s
-mb = 12; Ry = 1; Rz = mb; caipiShiftZ = 3;
+mb = 6; Ry = 1; Rz = mb; caipiShiftZ = 2;
 TR=0.081*nz/mb;
 
 nDummyFrames = 0;
@@ -154,7 +154,7 @@ end
 
 
 %% 3D EPI under-sampled
-mb = 12; Ry = 1; Rz = mb; caipiShiftZ = 3;
+mb = 6; Ry = 1; Rz = mb; caipiShiftZ = 2;
 nDummyFrames = 0;
 nFrames = 2;
 alpha = 20;
@@ -183,7 +183,7 @@ nDummyFrames = 0; %for reaching steady-state
 nFrames = 1;
 pf_ky=1.0;
 if TODO(8)
-     writeEPI_vsasl(voxelSize, [nx ny nz], TE, 12*TR, alpha, mb, pf_ky, Ry, Rz, caipiShiftZ, nFrames, nDummyFrames, '3D', ...
+     writeEPI_vsasl_multishot(voxelSize, [nx ny nz], TE, 12*TR, alpha, mb, pf_ky, Ry, Rz, caipiShiftZ, nFrames, nDummyFrames, '3D', ...
         'seqName', sprintf('3dmb%d_beta', mb), ...
         'fatSat', fatSat, ...
         'RFspoil', RFspoil, ...
