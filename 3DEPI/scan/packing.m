@@ -34,7 +34,7 @@ cd mb6_beta/
 system('tar xf *.tar')
 cd ../
 
-copyfile b0.tar ./b0/
-cd b0/
-system('tar xf *.tar')
-cd ../
+% copyfile b0.tar ./b0/
+% cd b0/
+% system('tar xf *.tar')
+% cd ../

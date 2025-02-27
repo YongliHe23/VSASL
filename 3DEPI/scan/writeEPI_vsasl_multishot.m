@@ -153,6 +153,8 @@ for iASLprep = 1:2
                         'delay', sys_vsprep.adcDeadTime);  
 end
 
+% instead of zeros gz for control; take absolute values of the gz waveform
+prep.g{2}.waveform=abs(prep.g{1}.waveform);
 %% Create fat sat pulse 
 
 fatsat.flip    = 90;      % degrees
@@ -447,8 +449,10 @@ for ifr = (1-nDummyFrames):nFrames
         for ipt=1:round(nz/nz_pershot)
             % ASL prep
             seq.addBlock(mr.makeDelay(2.0),mr.makeLabel('SET', 'TRID', iASLprep));
-            seq.addBlock(prep.rf{iASLprep}, prep.g{iASLprep}, mr.makeDelay(1.3));
-            for p = IP(1+(ipt-1)*nz_pershot:ipt*nz_pershot)
+            seq.addBlock(prep.rf{iASLprep}, prep.g{iASLprep});
+            seq=ovsprep(seq,rfsat,rf_beta,gx_beta,gy_beta,gz_beta,rf,gzRF,gzRF_r, gxSpoil,gzSpoil,1.3,TR/np,rf_inc,rf_phase,arg,sys); %insert ovs prep pulses in betw vsprep and readout
+
+            for p = IP(ipt:round(nz/nz_pershot):end)
                 %rf.freqOffset = (1-strcmp(type, '3D')) * round((p-1)*freq);  % frequency offset (Hz) for SMS slice shift
         
                 % Must label the first block in segment with segment ID. See Pulseq on GE manual.
@@ -646,3 +650,55 @@ return
 %% e.g., for the real TE, TR or for staying within slewrate limits
 % rep = seq.testReport;
 % fprintf([rep{:}]);
+
+function seq=ovsprep(seq,rfsat,rf_beta,gx_beta,gy_beta,gz_beta,rf,gzRF,gzRF_r, gxSpoil,gzSpoil,vsdelay,etTR,rf_inc,rf_phase,arg,sys)
+% append ovs prep (dummy shots) to seq object
+% Inputs:
+    % - seq: seq object
+    % - rfsat: fatsat pulse
+    % - rf_beta/gx_beta/gy_beta/gz_beta: ovs pulse
+    % - gxSpoil/gzSpoil: gradient crushers
+    % - rf/gzRF/gzRF_r: the excitation (alpha) pulse
+    % - vsdelay: delay time (sec) between vsprep and readout
+    % - etTR: echo-train TR(sec)
+    % - rf_inc/rf_phase
+    % - arg
+    % - sys
+% Outputs:
+    % - seq
+    rfSpoilingInc=117;
+    for ishot=1:floor(vsdelay/etTR)
+        %fat sat
+        rfsat.phaseOffset = rf_phase/180*pi;
+        seq.addBlock(rfsat);%,mr.makeLabel('SET','TRID',ishot));
+        seq.addBlock(gxSpoil, gzSpoil);
+
+        rf_inc = mod(rf_inc+rfSpoilingInc, 360.0);
+        rf_phase = mod(rf_phase+rf_inc, 360.0);
+
+        
+        %beta pulse
+        rf_beta.phaseOffset=rf_phase/180*pi;
+        seq.addBlock(rf_beta,gx_beta,gy_beta,gz_beta);
+        seq.addBlock(gxSpoil,gzSpoil);
+        
+        % excitation pulse and RF spoiling
+        rf.phaseOffset = rf_phase/180*pi;
+        seq.addBlock(rf,gzRF);
+        seq.addBlock(gzRF_r);
+
+        rf_inc = mod(rf_inc+rfSpoilingInc, 360.0);
+        rf_phase = mod(rf_phase+rf_inc, 360.0);
+
+        %add delay to fulfill etTR
+        minTR = (mr.calcDuration(rfsat) + mr.calcDuration(gxSpoil)) + ...
+        mr.calcDuration(rf) + (mr.calcDuration(rf_beta)+mr.calcDuration(gxSpoil))+mr.calcDuration(gzRF_r);
+        TRdelay=round((etTR-minTR-arg.segmentRingdownTime)/sys.blockDurationRaster) * sys.blockDurationRaster;
+        seq.addBlock(mr.makeDelay(TRdelay));
+    end
+
+    % add extra delay to fulfill vsdelay
+    extradelay=round((vsdelay-etTR*ishot-arg.segmentRingdownTime)/sys.blockDurationRaster)* sys.blockDurationRaster;
+    seq.addBlock(mr.makeDelay(extradelay));
+
+return
