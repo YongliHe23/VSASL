@@ -56,15 +56,16 @@ smap = smap(Rx, Ry, Rz, :);
 spgr = spgr(Rx, Ry, Rz, :);
 
 % Save result
+save_root='/mnt/storage/yonglihe/h5files/20250218/';
 if ~isempty('sense.mat')
-    save(sprintf('%s_%d.mat', 'sense', m), 'smap', 'spgr', '-v7.3');
+    save([save_root sprintf('%s_%d.mat', 'sense', m)], 'smap', 'spgr', '-v7.3');
 end
 
 %%
 
 % EPI ghost calibration. Saves linear ghost correction parameters in a.mat
 % If you observe phase wraps in plots, change 'del' in set_experimental_params.m
-save_root='/mnt/storage/yonglihe/h5files/vsasl/';
+%save_root='/mnt/storage/yonglihe/h5files/vsasl/';
 D = readraw(datafile_ghostcal, scanner);
 hmriutils.epi.io.draw2hdf(D, etl, np, [save_root 'ghostcal.h5']);
 get_ghost_calibration_data;  
@@ -77,8 +78,8 @@ etl=90;
 hmriutils.epi.io.draw2hdf(D, etl, np, fn, 'maxFramesPerFile', 40);
 
 D = readraw(datafile_mb1off, scanner);
-fn = '3depi_mb1off.h5';   % used by recon_timeseries.m as well
-np = 84; %60;
+fn = [save_root '3depi_mb1off.h5'];   % used by recon_timeseries.m as well
+np = 42;%84; %60;
 etl=90;
 hmriutils.epi.io.draw2hdf(D, etl, np, fn, 'maxFramesPerFile', 8);
 
@@ -92,16 +93,16 @@ hmriutils.epi.io.draw2hdf(D, etl, np, fn, 'maxFramesPerFile', 40);
 
 %mb6
 D = readraw(datafile_mb6on, scanner);
-fn = [save_root '3depi_mb12.h5'];
+fn = [save_root '3depi_mb6.h5'];
 np = 7;%5;
-etl=72;
+etl=90;
 hmriutils.epi.io.draw2hdf(D, etl, np, fn, 'maxFramesPerFile', 50);
 
 D = readraw(datafile_mb6off, scanner);
-%fn = '3depi_mb6off.h5';   % used by recon_timeseries.m as well
-fn = '3depi_mb12off.h5';
+fn = [save_root '3depi_mb6off.h5'];   % used by recon_timeseries.m as well
+%fn = '3depi_mb12off.h5';
 np = 7;%5;
-etl=72;
+etl=90;
 hmriutils.epi.io.draw2hdf(D, etl, np, fn, 'maxFramesPerFile', 50);
 
 %load noise 
@@ -116,18 +117,18 @@ draw = hmriutils.epi.io.readframe(fn, 1);
 dfr = hmriutils.epi.rampsampepi2cart(draw, kxo, kxe, nx, fov(1)*100, 'nufft'); 
 dfr = hmriutils.epi.epiphasecorrect(dfr, a);    %  [nx etl np nc]
 
-caipi_path='/home/yonglihe/Documents/MATLAB/gre3d_IVsat/3d-epi/IVext/Scan/caipi1by12/centerout/mb1_beta/caipi.mat';
+caipi_path='/home/yonglihe/Documents/MATLAB/VSASL/3DEPI/scan/mb1_beta/caipi.mat';
 d_mb1on=fillCaipi(dfr,caipi_path);
 I_mb1on=zeros(nx,ny,nz);
 I_mb1on=bart('pics -l1 -r0.001',d_mb1on,smap);
 
 etl=90;
-fn='3depi_mb1off.h5';
+fn=[save_root '3depi_mb1off.h5'];
 draw = hmriutils.epi.io.readframe(fn, 1);
 dfr = hmriutils.epi.rampsampepi2cart(draw, kxo, kxe, nx, fov(1)*100, 'nufft'); 
 %dfr = hmriutils.epi.epiphasecorrect(dfr, a);    %  [nx etl np nc]
 dfr = hmriutils.epi.epiphasecorrect(dfr, a);
-caipi_path='/home/yonglihe/Documents/MATLAB/gre3d_IVsat/3d-epi/IVext/Scan/caipi1by12/centerout/mb1_beta/caipi.mat';
+caipi_path='/home/yonglihe/Documents/MATLAB/VSASL/3DEPI/scan/mb1_beta/caipi.mat';
 d_mb1off=fillCaipi(dfr,caipi_path);
 
 %d_mb1off=zeros(nx,ny,nz,32);
@@ -145,31 +146,31 @@ d_IVX_mb1(:,end-etl+1:end,:,:)=dfr;
 I_IVX_mb1=zeros(nx,ny,nz);
 
 
-%% mb12
-mb=12;
+%% mb6
+mb=6;
 clear draw dfr
-fn = [save_root '3depi_mb12.h5'];
+fn = [save_root '3depi_mb6.h5'];
 %fn='3depi_mb12_pADOV90.h5';
 %fn='3depi_mb12_pTrained.h5';
-draw = hmriutils.epi.io.readframe(fn, 2);
+draw = hmriutils.epi.io.readframe(fn, 1);
 dfr = hmriutils.epi.rampsampepi2cart(draw, kxo, kxe, nx, fov(1)*100, 'nufft'); 
 dfr = hmriutils.epi.epiphasecorrect(dfr, a);    %  [nx etl np nc]
 
 %caipi_path='/home/yonglihe/Documents/MATLAB/gre3d_IVsat/3d-epi/IVext/Scan/caipi1by12/pOpt/mb12_beta/caipi.mat';
-caipi_path='/home/yonglihe/Documents/MATLAB/gre3d_IVsat/3d-epi/IVext/Scan/caipi1by12/centerout/mb12_beta/caipi.mat';
-d_mb12on=fillCaipi(dfr,caipi_path);
-I_mb12on=zeros(nx,ny,nz);
-I_mb12on=bart('pics -l1 -r0.001',d_mb12on,smap);
+caipi_path='/home/yonglihe/Documents/MATLAB/VSASL/3DEPI/scan/mb6_beta/caipi.mat';
+d_mb6on=fillCaipi(dfr,caipi_path);
+I_mb6on=zeros(nx,ny,nz);
+I_mb6on=bart('pics -l1 -r0.001',d_mb6on,smap);
 
 %beta off
-fn = '3depi_mb12off.h5';
-draw = hmriutils.epi.io.readframe(fn, 12);
+fn = [save_root '3depi_mb6off.h5'];
+draw = hmriutils.epi.io.readframe(fn, 1);
 dfr = hmriutils.epi.rampsampepi2cart(draw, kxo, kxe, nx, fov(1)*100, 'nufft'); 
 dfr = hmriutils.epi.epiphasecorrect(dfr, a);    %  [nx etl np nc]
 
-d_mb12off=fillCaipi(dfr,caipi_path);
-I_mb12off=zeros(nx,ny,nz);
-I_mb12off=bart('pics -l1 -r0.001',d_mb12off,smap);
+d_mb6off=fillCaipi(dfr,caipi_path);
+I_mb6off=zeros(nx,ny,nz);
+I_mb6off=bart('pics -l1 -r0.001',d_mb6off,smap);
 %% fMRI recon
 ndummyshot=12;
 nrun=70;

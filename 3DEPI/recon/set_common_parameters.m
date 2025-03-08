@@ -3,11 +3,11 @@
 % The number of temporal frames is not set here; 
 % it is determined by the 'runs' parameter on the console
 voxelSize = [2.4 2.4 2.4]*1e-3;   % m
-nx = 90; ny = 90; nz=84; %nz = 60;        % matrix size
+nx = 90; ny = 90; nz=42; %nz = 60;        % matrix size
 TE = 30e-3;                       % sec
 alpha = 52;                       % flip angle (deg)
-mb = 12;                           % multiband/SMS factor
-pf_ky = 72/90;                    % partial Fourier factor
+mb = 6;                           % multiband/SMS factor
+pf_ky = 1;%72/90;                    % partial Fourier factor
 
 
 etl = round(ny*pf_ky);

@@ -26,5 +26,16 @@ elseif length(negIP)==length(posIP)
     end
 end
 IP=IP_co;
+
+IP2=zeros(size(IP));
+nz_pershot=6;
+if Rz==1
+    for ipt=1:round(nz/nz_pershot)
+        IP2(1+(ipt-1)*nz_pershot:ipt*nz_pershot)=IP(ipt:round(nz/nz_pershot):end);
+    end
+    IP=IP2;
+end
+
 IP=IP+nz/2+1;
+
 end

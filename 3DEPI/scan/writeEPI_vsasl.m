@@ -446,9 +446,10 @@ for ifr = (1-nDummyFrames):nFrames
     for iASLprep=1:2
         % ASL prep
         seq.addBlock(mr.makeDelay(2.0),mr.makeLabel('SET', 'TRID', iASLprep));
-        seq.addBlock(prep.rf{iASLprep}, prep.g{iASLprep});
-	    seq=ovsprep(seq,rfsat,rf_beta,gx_beta,gy_beta,gz_beta,rf,gzRF,gzRF_r, gxSpoil,gzSpoil,1.3,TR/np,rf_inc,rf_phase,arg,sys); %insert ovs prep pulses in betw vsprep and readout
-        
+        seq.addBlock(prep.rf{iASLprep}, prep.g{iASLprep},mr.makeDelay(0.028)); %add gap after rf event to avoid overlap with the subsequent pure_delay; rfDuration=0.0272s
+        seq.addBlock(mr.makeDelay(1.0)); %give some time for the labeled spins to flow into ROI
+        seq=ovsprep(seq,rfsat,rf_beta,gx_beta,gy_beta,gz_beta,rf,gzRF,gzRF_r, gxSpoil,gzSpoil,1.33-1.0,TR/np,rf_inc,rf_phase,arg,sys); %insert ovs prep pulses in betw vsprep and readout
+ 
         % slice (partition/SMS group) loop
         for p = IP
             %rf.freqOffset = (1-strcmp(type, '3D')) * round((p-1)*freq);  % frequency offset (Hz) for SMS slice shift

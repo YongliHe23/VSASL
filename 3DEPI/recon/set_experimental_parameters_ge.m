@@ -8,19 +8,19 @@ scanner = 'GE';  % 'GE' or 'Siemens' (for now!)
 kspace_delay = -1.5;  
 
 % echo readout gradient waveform file
-readout_trajectory_file = '/home/yonglihe/Documents/MATLAB/gre3d_IVsat/3d-epi/IVext/Scan/caipi1by12/centerout/cal/module10.mod';%'/export/jfnielse/github/scanLog/HarmonizedMRI/fMRI/readout_Jan2024.mod';
+readout_trajectory_file = '/home/yonglihe/Documents/MATLAB/VSASL/3DEPI/scan/cal/module10.mod';%'/export/jfnielse/github/scanLog/HarmonizedMRI/fMRI/readout_Jan2024.mod';
 
-dataDir = '/mnt/storage/yonglihe/transfer/20250122/';
+dataDir = '/mnt/storage/yonglihe/transfer/20250218/';
 
 % data file names
-datafile_ghostcal = [dataDir 'ylhe_e06545_s00003_83968/P83968.7'];
-datafile_mb1on = [dataDir 'ylhe_e06545_s00007_87040/P87040.7'];
-%datafile_mb1off=[dataDir 'ylhe_e15471_s00004_09728/P09728.7'];
-datafile_mb6on=[dataDir 'ylhe_e06545_s00008_87552/P87552.7'];
-%datafile_mb6off=[dataDir 'ylhe_e15471_s00005_10240/P10240.7'];
+datafile_ghostcal = [dataDir 'ylhe_e06702_s00003_31744/P31744.7'];
+datafile_mb1on = [dataDir 'ylhe_e06702_s00004_32256/P32256.7'];
+datafile_mb1off=[dataDir 'ylhe_e06702_s00005_32768/P32768.7'];
+% datafile_mb6on=[dataDir 'P,mb6on.7'];
+% datafile_mb6off=[dataDir 'P,mb6off.7'];
 %datafile_noise=[dataDir 'ylhe_e15338_s00007_17920/P17920.7'];
 
-datafile_b0 = [dataDir 'ylhe_e06545_s00002_83456/P83456.7'];
+datafile_b0 = [dataDir 'ylhe_e06702_s00002_31232/P31232.7'];
 b0.deltaTE = 1000/440*1e-3;   % sec
 b0.N = [100 100 100];         % matrix size
 b0.fov = [24 24 24]*1e-2;     % m

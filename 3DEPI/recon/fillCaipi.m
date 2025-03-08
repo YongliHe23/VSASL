@@ -7,7 +7,7 @@ function d=fillCaipi(dfr,Caipi_fn)
 % d: (nx,ny,nz,nc)
 
 
-[ny,nz]=deal(90,84);
+[ny,nz]=deal(90,42);
 [nx,etl,np,nc]=size(dfr); %np=10, nc=32
 mb=nz/np;
 % IP: the starting kz lines for each partition of data being filled: (np,1)
